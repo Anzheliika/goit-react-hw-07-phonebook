@@ -2,15 +2,18 @@ import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
 import Contact from 'components/Contact/Contact';
 import { useSelector } from 'react-redux';
-import { getContacts, getFilter } from 'redux/contactsSlice';
+import { selectVisibleContacts } from 'redux/selectors';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { fetchContacts } from 'redux/operations';
 
 const ContactsList = () => {
-  const contacts = useSelector(getContacts);
-  const filteredContact = useSelector(getFilter);
+  const dispatch = useDispatch();
+  const visibleContacts = useSelector(selectVisibleContacts);
 
-  const visibleContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filteredContact.toLowerCase())
-  );
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
     <ul>

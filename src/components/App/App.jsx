@@ -5,7 +5,6 @@ import { Phonebook } from './App.styled';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
-
   return (
     <Phonebook>
       <h1>Phonebook</h1>
@@ -21,8 +20,7 @@ function App() {
       />
       <h2>Contacts</h2>
       <Filter />
-      <ContactList
-      />
+      <ContactList />
     </Phonebook>
   );
 }

@@ -1,60 +1,29 @@
 import { Label, Form, Input, Button } from './ContactForm.styled';
-import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { add, getContacts } from 'redux/contactsSlice';
-import { nanoid } from 'nanoid';
+import { addContact } from 'redux/operations';
+import {  selectContacts } from 'redux/selectors';
 import { toast } from 'react-hot-toast';
 
 function ContactForm() {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-
+  const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
-
-  const handleChange = e => {
-    const { name, value } = e.currentTarget;
-
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-
-      case 'number':
-        setNumber(value);
-        break;
-
-      default:
-        return;
-    }
-  };
-
-  const reset = () => {
-    setName('');
-    setNumber('');
-  };
-
-  const addContact = ({ name, number }) => {
-    const newContact = {
-      name,
-      number,
-      id: nanoid(),
-    };
-
-    if (
-      contacts.find(
-        contact => contact.name.toLowerCase() === name.toLowerCase()
-      )
-    ) {
-      return toast(`${name} is already in contacts!`);
-    }
-    return dispatch(add(newContact));
-  };
 
   const handleSubmit = e => {
     e.preventDefault();
-    addContact({ name, number });
-    reset();
+
+    const form = e.currentTarget;
+    const name = form.name.value;
+    const number = form.number.value;
+    const isInContacts = contacts.some(el => el.name === name);
+
+    if (isInContacts) {
+      toast(`${name} is already in contacts, try another one`);
+
+      return;
+    }
+    dispatch(addContact({ name, number }));
+
+    form.reset();
   };
 
   return (
@@ -67,8 +36,7 @@ function ContactForm() {
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
-          value={name}
-          onChange={handleChange}
+
         />
       </Label>
 
@@ -80,8 +48,7 @@ function ContactForm() {
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
-          value={number}
-          onChange={handleChange}
+
         />
       </Label>
 
